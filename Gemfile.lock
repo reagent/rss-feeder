@@ -1,0 +1,20 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    pg (0.21.0)
+    pond (0.2.0)
+    que (0.14.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  pg (~> 0.21.0)
+  pond (~> 0.2.0)
+  que (~> 0.14.0)
+
+RUBY VERSION
+   ruby 2.4.1p111
+
+BUNDLED WITH
+   1.16.0

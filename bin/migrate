@@ -1,0 +1,34 @@
+#!/usr/bin/env ruby
+
+require "bundler/setup"
+
+require "pg"
+require "pond"
+require "uri"
+require "que"
+
+ROOT = Pathname.new(__FILE__).dirname.join('..')
+
+$: << ROOT
+
+require "lib/migrator"
+
+database_uri = URI(ENV['DATABASE_URL'])
+pool         = Pond.new(:maximum_size => 10) do
+  PG::Connection.open({
+    host:     database_uri.host,
+    user:     database_uri.user,
+    password: database_uri.password,
+    port:     database_uri.port || 5432,
+    dbname:   database_uri.path[1..-1]
+  })
+end
+
+Que.connection = pool
+
+pool.checkout do |connection|
+  migrator = Migrator.new(connection, ROOT.join("migrations"))
+  migrator.migrate
+end
+
+Que::Migrations.migrate!
