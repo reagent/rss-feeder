@@ -1,0 +1,35 @@
+#!/usr/bin/env ruby
+
+require "bundler/setup"
+
+require "net/http"
+require "pg"
+require "pond"
+require "que"
+require "nokogiri"
+
+ROOT             = Pathname.new(__FILE__).dirname.join('..')
+UPDATE_THRESHOLD = Time.now.utc - (1 * 60 * 60) # 1 hour ago
+
+$: << ROOT
+
+require "lib/pool"
+require "lib/user"
+require "lib/profile"
+
+pool = Pool.create_from(ENV['DATABASE_URL'])
+
+Que.connection = pool
+
+pool.checkout do |connection|
+  User.connection = connection
+
+  User.to_update(UPDATE_THRESHOLD).each do |user|
+    user.article_urls.each_with_index do |url, index|
+      delay = Time.now + (index * 5)
+      Que::Job.enqueue(user.id, url, run_at: delay)
+    end
+
+    user.update_polled_at(Time.now.utc)
+  end
+end

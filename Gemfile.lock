@@ -1,6 +1,9 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    mini_portile2 (2.3.0)
+    nokogiri (1.8.1)
+      mini_portile2 (~> 2.3.0)
     pg (0.21.0)
     pond (0.2.0)
     que (0.14.0)
@@ -9,6 +12,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  nokogiri (~> 1.8.0)
   pg (~> 0.21.0)
   pond (~> 0.2.0)
   que (~> 0.14.0)
